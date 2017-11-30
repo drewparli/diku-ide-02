@@ -26,14 +26,14 @@ function main()
   })
 }
 
+// set constants
+var h = 400                       // overall height
+var w = 1200                       // overall width
+var origin = {"x": 50, "y": 200}  // temperature graph
 
 function initGraph()
 {
 
-  // set constants
-  var h = 400;                      // overall height
-  var w = 600;                      // overall width
-  var origin = {"x": 50, "y": 200}  // temperature graph
 
   //initiate the svg graph object
   var svg = d3.select("body")
@@ -75,20 +75,34 @@ function initGraph()
 
 var lines = function(dataset)
 {
-    var vis = d3.select('#tempgraph')
-    console.log("vis", vis)
+  var vis = d3.select('#tempgraph')
+  console.log("vis", vis)
 
-    var polylines = vis.selectAll("polyline")
-      .data(dataset)
+  var polylines = vis.selectAll("polyline")
+    .data(dataset)
 
-    polylines.enter()
-      .append("svg:polyline")
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", "1")
-      .attr("points", function(d,i)
-      {
-        return d.temps
-      })
-    console.log(polylines)
+  polylines.enter()
+    .append("svg:polyline")
+    .attr("fill", "none")
+    .attr("stroke", "black")
+    .attr("stroke-width", "1")
+    .attr("points", function(d,i)
+    {
+      var pairs = d.temps.map(function(t, i)
+        {
+          // still need to handle missing data
+          // represented as value 999.9
+          return "" + (origin.x + (i*100)) + "," + (t*10)
+        })
+      console.log(pairs)
+      return pairs.join(" ")
+    })
+  console.log(polylines)
+}
+
+
+
+var zip = function(x, y)
+{
+  return [x,y]
 }
