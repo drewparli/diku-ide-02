@@ -1,3 +1,10 @@
+#axis {
+    stroke: 10px;
+    padding-left: 10px;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
 line {
     fill: none;
     stroke: rgba(0, 0, 0, 1.0);
