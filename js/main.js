@@ -92,7 +92,7 @@ var lines = function(dataset)
         {
           // still need to handle missing data
           // represented as value 999.9
-          return "" + (origin.x + (i*100)) + "," + (t*10)
+          return "" + (origin.x + (i*100)) + "," + (origin.y - (t*7))
         })
       console.log(pairs)
       return pairs.join(" ")
