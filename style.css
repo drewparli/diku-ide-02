@@ -1,0 +1,16 @@
+line {
+    fill: none;
+    stroke: rgba(0, 0, 0, 1.0);
+    stroke-width: 2px;
+}
+
+polyline {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 1px;
+}
+
+polyline:hover {
+    stroke: rgba(255, 0, 0, 1.0);
+    stroke-width: 3px;
+}
