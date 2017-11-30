@@ -5,7 +5,7 @@ var dataset;
 function main()
 {
   // inspiration from: http://bl.ocks.org/enjalot/1525346
-  d3.csv("data/dc.csv", function(data)
+  d3.csv("dc.csv", function(data)
   {
     console.log(data.columns);
     // assignment to global variable to make data available
