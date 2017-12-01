@@ -1,164 +1,118 @@
-d3.select(window).on('load', main);
+// Data structure for line graph visualization
+function LineGraph() {
+  this.height = 400
+  this.width = 800
+  this.margin = {"left": 30, "right": 30, "top": 30, "bottom": 30}
+  this.origin = {"x": 0, "y": 0}
+  this.xScale;
+  this.yScale;
+  this.data;
+}
 
 // Global Variables
-var h = 400                       // overall height
-var w = 1200                       // overall width
-var origin = {"x": 50, "y": 200}  // temperature graph
-var xScale;
-var yScale;
-var kbh;
+
+// Run the main function after the index page loads
+d3.select(window).on('load', main("kbh.csv"));
 
 
-function main()
+// This is the main routine
+function main(filename)
 {
   // inspiration from: http://bl.ocks.org/enjalot/1525346
-  d3.csv("kbh.csv", function(data)
+  d3.csv(filename, function(data)
   {
-    initGraph()
-    console.log(data.columns);
+    var kbh = new LineGraph()
+    initTempGraph(kbh)
+
     // assignment to global variable to make data available
-    kbh = data.map(function(d)
+    kbh.data = data.map(function(d)
     {
       // d is a single year in the kbh dataset
       var y = d.YEAR
       var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
                d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC]
-      var s = mkSegments(t)
+      var s = mkSegments(kbh, t)
       return {"year": y, "temps": t, "segments": s};
     })
-    console.log("KBH", kbh)
-    addTempLines(kbh)
+    addTempLines(kbh, kbh.data)
   })
 }
 
-function mkSegments(tempArr)
+
+function initTempGraph(kbh)
 {
-  var i = 0
-  var j = 1
-  var segments = []
-
-  while (j <= tempArr.length - 1) {
-    if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
-    {
-      console.log("made it")
-      s = {
-        "x1": xScale(i),
-        "y1": yScale(tempArr[i]),
-        "x2": xScale(j),
-        "y2": yScale(tempArr[j]),
-      }
-      segments.push(s)
-    }
-    i += 1
-    j += 1
-  }
-
-  return segments
-}
-
-
-function initGraph()
-{
-
-  // var tmax = d3.max(dataset, function(d)
-  // {
-  //   return Math.max.apply(null, d.temps)
-  // })
-
-  // var tmin = d3.min(dataset, function(d)
-  // {
-  //   return Math.min.apply(null, d.temps)
-  // })
-
-  // console.log("MinMax", tmin, tmax)
-
   // Insipration for using scales - https://bl.ocks.org/mbostock/3371592
-
-  xScale = d3.scaleLinear()
+  kbh.xScale = d3.scaleLinear()
     .domain([0,11])   // this is the value on the axis
-    .range([0, w])  // this is the space allocated the axis
+    // this is the space allocated the axis
+    .range([0, kbh.width - kbh.margin.left - kbh.margin.left])
     .nice();
 
-  yScale = d3.scaleLinear()
+  kbh.yScale = d3.scaleLinear()
     .domain([-10, 30])   // this is the value on the axis
-    .range([h, 0])  // this is the space allocated the axis
+    // this is the space allocated the axis
+    .range([kbh.height - kbh.margin.top - kbh.margin.bottom, 0])
     .nice();
 
-  var xAxis = d3.axisBottom(xScale)
+  var xAxis = d3.axisBottom(kbh.xScale)
     .ticks(10)
 
-  var yAxis = d3.axisRight(yScale)
+  var yAxis = d3.axisLeft(kbh.yScale)
     .ticks(10)
 
+  // add the main svg container
   var svg = d3.select("body")
     .append("svg")
-    .attr("width", w)
-    .attr("height", h)
+    .attr("width", kbh.width)
+    .attr("height", kbh.height)
 
+  // add a group to organize x and y axis
   svg.append("svg:g")
-    .attr("id", "x-axis")
+    .attr("id", "xAxis")
     .attr("class", "axis")
+    .attr("transform", "translate(30,370)")
     .call(xAxis)
 
   svg.append("svg:g")
-    .attr("id", "y-axis")
+    .attr("id", "yAxis")
     .attr("class", "axis")
+    .attr("transform", "translate(30,30)")
     .call(yAxis)
 
   svg.append("svg:g")
-    .attr("id", "temp-lines")
+    .attr("id", "yearlyTemperatures")
+
+  d3.select("#xAxis")
+    .append("svg:line")
+    .attr("class", "xGrid")
+    .attr("transform", "translate(30,370)")
+    .attr("x1", 0)
+    .attr("y1", kbh.yScale(15))
+    .attr("x2", kbh.xScale(11))
+    .attr("y2", kbh.yScale(15))
 }
 
 
-// var lines = function(kbh)
-// {
-//   var vis = d3.select('#tempgraph')
-//   console.log("vis", vis)
-
-//   var polylines = vis.selectAll("polyline")
-//     .data(kbh)
-
-//   polylines.enter()
-//     .append("svg:polyline")
-//     .attr("fill", "none")
-//     .attr("stroke", "black")
-//     .attr("stroke-width", "1")
-//     .attr("points", function(d,i)
-//     {
-//       var pairs = d.temps.map(function(t, i)
-//         {
-//           // still need to handle missing data
-//           // represented as value 999.9
-//           return "" + xScale(i) + "," + yScale(t)
-//         })
-//       console.log(pairs)
-//       return pairs.join(" ")
-//     })
-//   console.log(polylines)
-// }
-
-
-var addTempLines = function(dataset)
+var addTempLines = function(kbh, dataset)
 {
-  var vis = d3.select('#temp-lines')
+  var vis = d3.select('#yearlyTemperatures')
 
   var groups = vis.selectAll("g")
-    .data(dataset)
+    .data(kbh.data)
 
   groups.enter()
     .append("svg:g")
     .attr("class", "temp-line")
+    .attr("transform", "translate("+kbh.margin.left+","+kbh.margin.top+")")
     .attr("id", function(d,i)
     {
         return "_" + d.year
     })
 
   // add line segments for each data point
-  dataset.forEach(function(data, i)
+  kbh.data.forEach(function(data, i)
     {
     var year = d3.select("#_" + data.year)
-
-    console.log(data.temps)
 
     var lines = year.selectAll("line")
       .data(data.segments)
@@ -171,27 +125,32 @@ var addTempLines = function(dataset)
       .attr("y2", function(seg){return seg.y2})
       .attr("class", "temp-segment")
     })
-
-
-  //   .attr("id", function(d,i)
-  //   {
-  //     var pairs = d.temps.map(function(t, i)
-  //       {
-  //         // still need to handle missing data
-  //         // represented as value 999.9
-  //         return "" + xScale(i) + "," + yScale(t)
-  //       })
-  //     console.log(pairs)
-  //     return pairs.join(" ")
-  //   })
-
-  // kbh.forEach(function(item, index)
-  //   {
-  //     console.log(item.year)
-  //   })
-
 }
 
+function mkSegments(kbh, tempArr)
+{
+  var i = 0
+  var j = 1
+  var segments = []
+
+  while (j <= tempArr.length - 1) {
+    if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
+    {
+      console.log("made it")
+      s = {
+        "x1": kbh.xScale(i),
+        "y1": kbh.yScale(tempArr[i]),
+        "x2": kbh.xScale(j),
+        "y2": kbh.yScale(tempArr[j]),
+      }
+      segments.push(s)
+    }
+    i += 1;
+    j += 1;
+  }
+
+  return segments
+}
 
 
 
