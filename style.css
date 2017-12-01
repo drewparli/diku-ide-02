@@ -1,23 +1,28 @@
-#axis {
-    stroke: 10px;
-    padding-left: 10px;
-    padding-top: 10px;
-    margin-top: 10px;
+.axis {
+  stroke: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
+  margin-top: 10px;
 }
 
 line {
-    fill: none;
-    stroke: rgba(0, 0, 0, 1.0);
-    stroke-width: 2px;
+  fill: none;
+  stroke: rgba(0, 0, 0, 1.0);
+  stroke-width: 2px;
 }
 
 polyline {
-    fill: none;
-    stroke: rgba(0, 0, 0, 0.1);
-    stroke-width: 1px;
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.1);
+  stroke-width: 1px;
 }
 
-polyline:hover {
-    stroke: rgba(255, 0, 0, 1.0);
-    stroke-width: 3px;
+.temp-line line {
+  stroke: rgba(0,0,0,0.2);
+  stroke-width: 0.5px;
+}
+
+.temp-line:hover line {
+  stroke: rgba(255, 0, 0, 1.0);
+  stroke-width: 3px;
 }
