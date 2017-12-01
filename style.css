@@ -1,17 +1,15 @@
-
-.axis {
-  stroke: 10px;
-  padding-left: 10px;
-  padding-top: 10px;
-  margin-top: 10px;
-}
-
 .temp-line:hover line {
   stroke: rgba(255, 0, 0, 1.0);
-  stroke-width: 3px;
+  stroke-width: 5px;
 }
 
 .temp-segment {
   stroke: rgba(0, 0, 0, 0.05);
   stroke-width: 1px;
+}
+
+.yGridlines {
+  stroke: rgba(0,0,0,0.1);
+  stroke-dasharray: 2,2;
+
 }

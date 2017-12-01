@@ -43,7 +43,7 @@ function initTempGraph(kbh)
 {
   // Insipration for using scales - https://bl.ocks.org/mbostock/3371592
   kbh.xScale = d3.scaleLinear()
-    .domain([0,11])   // this is the value on the axis
+    .domain([-1,12])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, kbh.width - kbh.margin.left - kbh.margin.left])
     .nice();
@@ -55,10 +55,10 @@ function initTempGraph(kbh)
     .nice();
 
   var xAxis = d3.axisBottom(kbh.xScale)
-    .ticks(10)
+    .ticks(12)
 
   var yAxis = d3.axisLeft(kbh.yScale)
-    .ticks(10)
+    .ticks(20)
 
   // add the main svg container
   var svg = d3.select("body")
@@ -66,11 +66,15 @@ function initTempGraph(kbh)
     .attr("width", kbh.width)
     .attr("height", kbh.height)
 
+  // add a group to organize the lines that will be drawn later
+  svg.append("svg:g")
+    .attr("id", "yearlyTemperatures")
+
   // add a group to organize x and y axis
   svg.append("svg:g")
     .attr("id", "xAxis")
     .attr("class", "axis")
-    .attr("transform", "translate(30,370)")
+    .attr("transform", "translate(30,"+ (kbh.height-kbh.margin.bottom) +")")
     .call(xAxis)
 
   svg.append("svg:g")
@@ -78,18 +82,13 @@ function initTempGraph(kbh)
     .attr("class", "axis")
     .attr("transform", "translate(30,30)")
     .call(yAxis)
+    .selectAll("line")
+    .attr("class", "yGridlines")
+    .attr("x2", kbh.width - kbh.margin.left - kbh.margin.left)
 
-  svg.append("svg:g")
-    .attr("id", "yearlyTemperatures")
+  d3.selectAll("#yGridlines")
+    .attr("stroke", null)
 
-  d3.select("#xAxis")
-    .append("svg:line")
-    .attr("class", "xGrid")
-    .attr("transform", "translate(30,370)")
-    .attr("x1", 0)
-    .attr("y1", kbh.yScale(15))
-    .attr("x2", kbh.xScale(11))
-    .attr("y2", kbh.yScale(15))
 }
 
 
