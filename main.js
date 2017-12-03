@@ -1,5 +1,5 @@
 // Data structure for line graph visualization
-function LineGraph() {
+function Visualization() {
   this.height = 400
   this.width = 800
   this.margin = {"left": 30, "right": 30, "top": 30, "bottom": 30}
@@ -9,7 +9,6 @@ function LineGraph() {
   this.data;
 }
 
-// Global Variables
 
 // Run the main function after the index page loads
 d3.select(window).on('load', main("kbh.csv"));
@@ -21,60 +20,91 @@ function main(filename)
   // inspiration from: http://bl.ocks.org/enjalot/1525346
   d3.csv(filename, function(data)
   {
-    var kbh = new LineGraph()
-    initTempGraph(kbh)
+    var kbh = new Visualization()
+    initVis(kbh)
+    kbh.data = preprocessData(data, kbh)
+    // console.log("KBH", kbh)
+    addTempLines(kbh)
+    addMeanDeviations(kbh)
+  })
+}
 
-    // assignment to global variable to make data available
-    kbh.data = data.map(function(d)
-    {
-      // d is a single year in the kbh dataset
-      var y = d.YEAR
-      var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
-               d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC]
-      var s = mkSegments(kbh, t)
-      return {"year": y, "temps": t, "segments": s};
-    })
-    addTempLines(kbh, kbh.data)
+function preprocessData(data, dset)
+{
+  return data.map(function(d)
+  {
+    // d is a single year in the temperature dataset
+    var y = d.YEAR
+    var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
+             d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC]
+    var s = mkSegments(dset, t)
+    return {"year": y, "temps": t, "segments": s};
   })
 }
 
 
-function initTempGraph(kbh)
+function mkSegments(dset, tempArr)
+{
+  var i = 0
+  var j = 1
+  var segments = []
+  while (j <= tempArr.length - 1) {
+    if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
+    {
+       s = {"x1": dset.xScale(i),
+            "y1": dset.yScale(tempArr[i]),
+            "x2": dset.xScale(j),
+            "y2": dset.yScale(tempArr[j])
+            }
+      segments.push(s)
+    }
+    i += 1;
+    j += 1;
+  }
+  return segments
+}
+
+
+function initVis(dset)
 {
   // Insipration for using scales - https://bl.ocks.org/mbostock/3371592
-  kbh.xScale = d3.scaleLinear()
+  dset.xScale = d3.scaleLinear()
     .domain([-1,12])   // this is the value on the axis
     // this is the space allocated the axis
-    .range([0, kbh.width - kbh.margin.left - kbh.margin.left])
+    .range([0, dset.width - dset.margin.left - dset.margin.left])
     .nice();
 
-  kbh.yScale = d3.scaleLinear()
+  dset.yScale = d3.scaleLinear()
     .domain([-10, 30])   // this is the value on the axis
     // this is the space allocated the axis
-    .range([kbh.height - kbh.margin.top - kbh.margin.bottom, 0])
+    .range([dset.height - dset.margin.top - dset.margin.bottom, 0])
     .nice();
 
-  var xAxis = d3.axisBottom(kbh.xScale)
+  var xAxis = d3.axisBottom(dset.xScale)
     .ticks(12)
 
-  var yAxis = d3.axisLeft(kbh.yScale)
+  var yAxis = d3.axisLeft(dset.yScale)
     .ticks(20)
 
   // add the main svg container
   var svg = d3.select("body")
     .append("svg")
-    .attr("width", kbh.width)
-    .attr("height", kbh.height)
+    .attr("width", dset.width)
+    .attr("height", dset.height)
 
-  // add a group to organize the lines that will be drawn later
+  // add a group to organize yearly temperatures that will be drawn later
   svg.append("svg:g")
     .attr("id", "yearlyTemperatures")
+
+  // add a group to organize the mean deviations that will be drawn later
+  svg.append("svg:g")
+    .attr("id", "meanDeviations")
 
   // add a group to organize x and y axis
   svg.append("svg:g")
     .attr("id", "xAxis")
     .attr("class", "axis")
-    .attr("transform", "translate(30,"+ (kbh.height-kbh.margin.bottom) +")")
+    .attr("transform", "translate(30,"+ (dset.height - dset.margin.bottom) +")")
     .call(xAxis)
 
   svg.append("svg:g")
@@ -84,15 +114,23 @@ function initTempGraph(kbh)
     .call(yAxis)
     .selectAll("line")
     .attr("class", "yGridlines")
-    .attr("x2", kbh.width - kbh.margin.left - kbh.margin.left)
+    .attr("x2", dset.width - dset.margin.left - dset.margin.left)
 
   d3.selectAll("#yGridlines")
     .attr("stroke", null)
-
 }
 
 
-var addTempLines = function(kbh, dataset)
+var addMeanDeviations = function(kbh)
+{
+  var vis = d3.select('#meanDeviations')
+
+  var groups = vis.selectAll("g")
+    .data(kbh.data)
+}
+
+
+var addTempLines = function(kbh)
 {
   var vis = d3.select('#yearlyTemperatures')
 
@@ -124,36 +162,4 @@ var addTempLines = function(kbh, dataset)
       .attr("y2", function(seg){return seg.y2})
       .attr("class", "temp-segment")
     })
-}
-
-function mkSegments(kbh, tempArr)
-{
-  var i = 0
-  var j = 1
-  var segments = []
-
-  while (j <= tempArr.length - 1) {
-    if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
-    {
-      console.log("made it")
-      s = {
-        "x1": kbh.xScale(i),
-        "y1": kbh.yScale(tempArr[i]),
-        "x2": kbh.xScale(j),
-        "y2": kbh.yScale(tempArr[j]),
-      }
-      segments.push(s)
-    }
-    i += 1;
-    j += 1;
-  }
-
-  return segments
-}
-
-
-
-var zip = function(x, y)
-{
-  return [x,y]
 }
