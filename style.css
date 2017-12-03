@@ -1,15 +1,32 @@
-.temp-line:hover line {
+.gridYear {
+  font-size: 8pt;
+  font-family: sans-serif;
+}
+
+.meanDeviation {
+  margin-bottom: 50px;
+}
+
+.tempCell {
+  fill: rgb(200, 200, 200);
+}
+
+.tempLine:hover line {
   stroke: rgba(255, 0, 0, 1.0);
   stroke-width: 5px;
 }
 
 .temp-segment {
-  stroke: rgba(0, 0, 0, 0.05);
+  stroke: rgba(100, 100, 100, 0.05);
   stroke-width: 1px;
 }
 
-.yGridlines {
+.xLines {
   stroke: rgba(0,0,0,0.1);
   stroke-dasharray: 2,2;
+}
 
+.yLines {
+  stroke: rgba(0,0,0,0.1);
+  stroke-dasharray: 2,2;
 }
