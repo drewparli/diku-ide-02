@@ -195,8 +195,7 @@ function initVis(vis)
 
   /* For temperature deviations */
   vis.scale.heatmap = d3.scaleLinear()
-    .domain([7, -7])   // this is the value on the axis
-    // this is the space allocated the axis
+    .domain([7, -7])
     .range([0, 1])
 
   var xAxis = d3.axisBottom(vis.scale.x)
@@ -278,7 +277,8 @@ function initVis(vis)
   d3.select("#tempGraph")
     .select("#xAxis")
     .selectAll("text")
-    .text(function(d,i) {
+    .text(function(d,i)
+    {
       return vis.months[i]
     })
 
@@ -397,8 +397,7 @@ var addMeanDeviations = function(kbh)
       .attr("style", function(d)
       {
         if (d != 999.9) {
-          var temp = kbh.scale.heatmap(d)
-          // var c = d3.interpolateRdYlBu(kbh.colorScale(d))
+          let temp = kbh.scale.heatmap(d)
           return "fill:" + d3.interpolateRdBu(temp) + ";"
         } else {
           return "fill:rgb(175,175,175);"
