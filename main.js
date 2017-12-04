@@ -23,19 +23,19 @@ function GData() {
               -109,
               -110,
               -111]
-
-  this.min = {0:100,
-              1:100,
-              2:100,
-              3:100,
-              4:100,
-              5:100,
-              6:100,
-              7:100,
-              8:100,
-              9:100,
-              10:100,
-              11:100}
+  this.min = [100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100,
+              100]
+  this.polygon = null
 }
 
 /* These are other data structures used to organize constants and magic numbers */
@@ -120,6 +120,22 @@ function preprocessData(vis, data)
             "year": y,
             };
   })
+
+  /* make an svg polygon point list for later */
+  var p = vis.gdata.max.map(function(y, x) {
+      return [x, y]
+    }).concat(
+    vis.gdata.min.map(function(y, x){
+      return [x,y]
+    }).reverse()
+    )
+
+  p.forEach(function(elem, i) {
+    p[i] = elem[0] + "," + elem[1]
+  })
+
+  vis.gdata.polygon = p.join(" ")
+
 }
 
 
