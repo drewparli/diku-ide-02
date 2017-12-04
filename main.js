@@ -12,7 +12,7 @@ function Visualization() {
                  6:"JUL", 7:"AUG", 8:"SEP", 9:"OCT", 10:"NOV", 11:"DEC"}
 }
 
-var Current = "dummy"; /* id of the element holding the dot */
+var Current = "2017"; /* id of the element holding the dot, default is 2017 */
 
 function GData() {
   this.max = [-100, -101, -102, -103, -104, -105, -106, -107, -108, -109, -110, -111]
@@ -62,7 +62,6 @@ function main(filename)
     addMeanDeviations(vis)
   })
 }
-
 
 function preprocessData(vis, data)
 {
@@ -123,7 +122,7 @@ function preprocessData(vis, data)
     }).concat(
     vis.gdata.min.map(function(y, x){
       return [vis.scale.x(x) + vis.margin.left, vis.scale.y(y) + vis.margin.top]
-    }).reverse()	  
+    }).reverse()
     )
 
   p.forEach(function(elem, i) {
@@ -131,7 +130,7 @@ function preprocessData(vis, data)
   })
 
   vis.gdata.polygon = p.join(" ")
-  
+
   /* Calculate overall monthly mean */
   vis.gdata.mean = vis.gdata.mean.map(function(monthArr, i)
   {
@@ -324,10 +323,20 @@ var addTempLines = function(vis)
       .attr("x2", function(seg){return seg.x2})
       .attr("y1", function(seg){return seg.y1})
       .attr("y2", function(seg){return seg.y2})
-      .attr("class", "temp-segment")
+      .attr("class", "tempLine-off")
     })
+
+  // default is the 2017 temperature line being turned on
+  d3.select("#tempGraph")
+    .select("#lines")
+    .select("#_2017")
+    .attr("class", "tempLine-on")
 }
 
+/*
+Creates a polygonal area for the min and max temperatures for the
+entire dataset.
+*/
 var addMinMaxArea = function(vis)
 {
   var vis = d3.select("#tempGraph")
@@ -336,6 +345,7 @@ var addMinMaxArea = function(vis)
     .attr("points", vis.gdata.polygon)
     .attr("class", "min-max-area")
 }
+
 
 var addMeanDeviations = function(kbh)
 {
@@ -362,21 +372,28 @@ var addMeanDeviations = function(kbh)
     // event handler for when a year is clicked
     .on("click", function(d)
       {
-        console.log(d)
-        dot_id = "dot_" + d.year
-        let new_dot = document.getElementById(dot_id)
-        new_dot.setAttribute("fill","black")
+        console.log(d) // for testing
+        let dot_new = "#dot_" + d.year
+        let dot_cur = "#dot_" + Current
 
-        d3.select("#_" + d.year)
+        d3.select("#heatmap")
+          .select("#rows")
+          .select(dot_new)
+          .attr("class", "dotOn")
+
+        d3.select("#tempGraph")
+          .select("#_" + d.year)
           .attr("class","tempLine-on")
 
-        if (Current != "dummy") {
-          let old_dot = document.getElementById("dot_" + Current)
-          old_dot.setAttribute("fill","white")
+        d3.select("#heatmap")
+          .select("#rows")
+          .select(dot_cur)
+          .attr("class", "dotOff")
 
-          d3.select("#_" + Current)
-            .attr("class","tempLine-off")
-        }
+        d3.select("#tempGraph")
+          .select("#_" + Current)
+          .attr("class","tempLine-off")
+
         Current = String(d.year)
       })
     .attr("transform", function(d,i)
@@ -410,8 +427,6 @@ var addMeanDeviations = function(kbh)
         if (d != 999.9) {
           let temp = kbh.scale.heatmap(d)
           return "fill:" + d3.interpolateRdBu(temp) + ";"
-        } else {
-          return "fill:rgb(175,175,175);"
         }
       })
       .attr("transform", function(d,i)
@@ -427,6 +442,10 @@ var addMeanDeviations = function(kbh)
     */
     year.append("svg:circle")
       .attr("id", function(d) { return "dot_" + d.year; })
+      .attr("class", function(d)
+      {
+        if (d.year == "2017") {return "dotOn"} else {return "dotOff"}
+      })
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 6
@@ -434,7 +453,7 @@ var addMeanDeviations = function(kbh)
         return "translate(" + x + "," + y + ")"
       })
       .attr("r", 2)
-      .attr("fill", "white")
+      // .attr("fill", "white")
 
     /* Labels every fifth year. */
     year.append("svg:text")
@@ -449,9 +468,6 @@ var addMeanDeviations = function(kbh)
       })
     })
 }
-
-
-
 
 
 /* Helper Functions */
