@@ -18,15 +18,20 @@ h1 {
   fill: rgb(200, 200, 200);
 }
 
-.tempLine:hover line {
-  stroke: rgba(255, 0, 0, 1.0);
-  stroke-width: 5px;
-}
-
-.temp-segment {
-  stroke: rgba(100, 100, 100, 0.05);
+.tempLine-off line {
+  stroke: rgba(100, 100, 100, 0.02);
   stroke-width: 1px;
 }
+
+.tempLine-on line {
+  stroke: rgba(0, 0, 0, 0.8);
+  stroke-width: 3px;
+}
+
+/*.temp-segment {
+  stroke: rgba(100, 100, 100, 0.05);
+  stroke-width: 1px;
+}*/
 
 .min-max-area {
   fill: rgba(0, 0, 0, 0.1);
