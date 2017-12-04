@@ -5,8 +5,37 @@ function Visualization() {
   this.margin = new Margin(30, 30, 30, 30)
   this.scale = new Scale()
   this.data
+  this.gdata = new GData()
   this.heatmap = new HeatMap()
   this.box = {"height": 4, "width": (this.width / 12) - 2}
+}
+
+function GData() {
+  this.max = [-100,
+              -101,
+              -102,
+              -103,
+              -104,
+              -105,
+              -106,
+              -107,
+              -108,
+              -109,
+              -110,
+              -111]
+
+  this.min = {0:100,
+              1:100,
+              2:100,
+              3:100,
+              4:100,
+              5:100,
+              6:100,
+              7:100,
+              8:100,
+              9:100,
+              10:100,
+              11:100}
 }
 
 /* These are other data structures used to organize constants and magic numbers */
@@ -33,6 +62,7 @@ function Margin(l, r, t, b) {
 }
 
 
+
 /* Run the main function after the index page loads */
 d3.select(window).on('load', main("kbh.csv"));
 
@@ -57,23 +87,38 @@ function preprocessData(vis, data)
   /* d is a single year in the temperature dataset */
   vis.data = data.map(function(d)
   {
-
     var y = d.YEAR
     var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
              d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC].map(Number)
-
-    // TODO: add yearly mean temp
-    // TODO: add min/max temp for whole range of years by month
-    var sum;
-
-    var m = t.reduce((prev, cur) => cur += prev)
-    var s = mkSegments(vis, t)
     // TODO: add mean temp for whole range of years by month
     // TODO: find standard deviation from this mean for each data point
-    return {"year": y,
-            "temps": t,
+
+    var sum = 0
+    var min = 100
+    var max = -100
+    for (var i = 0; i <= t.length - 1; i++) {
+      if (t[i] != 999.9)
+        {
+          // console.log(i, t[i], vis.gdata.max[i], vis.gdata.min[i])
+          sum += t[i];
+          if (t[i] > max) {max = t[i]}
+          if (t[i] < min) {min = t[i]}
+          if (t[i] > vis.gdata.max[i]) {vis.gdata.max[i] = t[i]}
+          if (t[i] < vis.gdata.min[i]) {vis.gdata.min[i] = t[i]}
+        } else {continue;
+          // TODO: use the average of the past few years here instead
+        }
+    }
+    var m = sum / t.length
+    var s = mkSegments(vis, t)
+    return {
+            "mean": m,
+            "min": min,
+            "max": max,
             "segments": s,
-            "mean": m};
+            "temps": t,
+            "year": y,
+            };
   })
 }
 
