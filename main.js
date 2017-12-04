@@ -10,7 +10,7 @@ function Visualization() {
   this.box = {"height": 4, "width": (this.width / 12) - 2}
 }
 
-var Dot = "dummy"; /* id of the element holding the dot */
+var Current = "dummy"; /* id of the element holding the dot */
 
 function GData() {
   this.max = [-100,
@@ -269,7 +269,7 @@ var addTempLines = function(kbh)
 
   groups.enter()
     .append("svg:g")
-    .attr("class", "tempLine")
+    .attr("class", "tempLine-off")
     .attr("transform", "translate("+kbh.margin.left+","+kbh.margin.top+")")
     .attr("id", function(d,i)
     {
@@ -316,15 +316,22 @@ var addMeanDeviations = function(kbh)
     // event handler for when a year is clicked
     .on("click", function(d)
       {
+        console.log(d)
         dot_id = "dot_" + d.year
         let new_dot = document.getElementById(dot_id)
         new_dot.setAttribute("fill","black")
 
-        if (Dot != "dummy") {
-          let old_dot = document.getElementById(Dot)
+        d3.select("#_" + d.year)
+          .attr("class","tempLine-on")
+
+        if (Current != "dummy") {
+          let old_dot = document.getElementById("dot_" + Current)
           old_dot.setAttribute("fill","white")
+
+          d3.select("#_" + Current)
+            .attr("class","tempLine-off")
         }
-        Dot = dot_id
+        Current = String(d.year)
       })
     .attr("transform", function(d,i)
     {

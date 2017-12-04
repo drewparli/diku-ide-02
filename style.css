@@ -18,8 +18,13 @@ h1 {
   fill: rgb(200, 200, 200);
 }
 
-.tempLine:hover line {
+.tempLine-off:hover line {
   stroke: rgba(255, 0, 0, 1.0);
+  stroke-width: 5px;
+}
+
+.tempLine-on line {
+  stroke: rgba(0, 255, 0, 1.0);
   stroke-width: 5px;
 }
 
