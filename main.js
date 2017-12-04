@@ -9,6 +9,8 @@ function Visualization() {
   this.box = {"height": 4, "width": (this.width / 12) - 2}
 }
 
+var Dot = "dummy"; /* id of the element holding the dot */
+
 /* These are other data structures used to organize constants and magic numbers */
 function HeatMap() {
   this.origin = new Origin(0, 10)
@@ -31,7 +33,6 @@ function Margin(l, r, t, b) {
   this.top = t
   this.bottom = b
 }
-
 
 /* Run the main function after the index page loads */
 d3.select(window).on('load', main("kbh.csv"));
@@ -245,11 +246,26 @@ var addMeanDeviations = function(kbh)
     .data(kbh.data.reverse())
 
   groups.enter()
-    .append("svg:g")
+    .append("svg:a")
     .attr("class", "row")
     .attr("id", function(d,i)
       {
         return "_" + d.year
+      })
+    .on("click", function(d)
+      {
+        console.log(Dot);
+
+        dot_id = "dot_" + d.year;
+        let new_dot = document.getElementById(dot_id);
+        new_dot.setAttribute("fill","black");
+
+        if (Dot != "dummy") {
+          let old_dot = document.getElementById(Dot);
+          old_dot.setAttribute("fill","white");
+        }
+
+        Dot = dot_id;
       })
     .attr("transform", function(d,i)
     {
@@ -294,14 +310,24 @@ var addMeanDeviations = function(kbh)
         return "translate(" + x + "," + y + ")"
       })
 
+    year.append("svg:circle")
+      .attr("id", function(d) { return "dot_" + d.year; })
+      .attr("transform", function(d,i)
+      {
+        var x = kbh.scale.x(12) + 30 - 32 + 6
+        var y = 10
+        return "translate(" + x + "," + y + ")"
+      })
+      .attr("r", 2)
+      .attr("fill", "white")
     year.append("svg:text")
       .attr("id", data.year)
       .attr("class", "gridYear")
-      .text(data.year)
+      .text(function(d) { if (Number(d.year) % 10 == 0) return data.year; })
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 14
-        var y = 10
+        var y = 4
         return "translate(" + x + "," + y + ")"
       })
     })
