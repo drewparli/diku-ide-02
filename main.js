@@ -434,7 +434,7 @@ var addMeanDeviations = function(kbh)
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 14
-        var y = 5.25
+        var y = 6
         return "translate(" + x + "," + y + ")"
       })
     })

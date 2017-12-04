@@ -25,7 +25,7 @@ h1 {
 
 .tempLine-on line {
   stroke: rgba(0, 0, 0, 0.8);
-  stroke-width: 5px;
+  stroke-width: 3px;
 }
 
 /*.temp-segment {
