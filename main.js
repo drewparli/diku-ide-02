@@ -1,20 +1,22 @@
-// Data structure for line graph visualization
+/*
+This is the main data structure for the whole visualization, where the
+con
+
+*/
 function Visualization() {
   this.origin = {"x": 0, "y": 0}
   this.height = 1400
   this.width = 800
   this.margin = new Margin(30, 30, 30, 30)
   this.scale = new Scale()
-  this.xScale;
-  this.yScale;
-  this.colorScale;
-  this.data;
-  this.box = {"height": 4, "width": 64}
+  this.data
+  this.box = {"height": 4, "width": (this.width / 12) - 2  }
 }
 
 function Scale() {
-  this.x = 0
-  this.y = 1
+  this.x
+  this.y
+  this.heatmap
 }
 
 function Margin(l, r, t, b) {
@@ -25,35 +27,33 @@ function Margin(l, r, t, b) {
 }
 
 
-
-// Run the main function after the index page loads
+/* Run the main function after the index page loads */
 d3.select(window).on('load', main("kbh.csv"));
 
 
-// This is the main routine
+/* This is the main routine */
 function main(filename)
 {
-  // inspiration from: http://bl.ocks.org/enjalot/1525346
   d3.csv(filename, function(data)
   {
-    var kbh = new Visualization()
-    initVis(kbh)
-    kbh.data = preprocessData(data, kbh)
-    console.log("KBH", kbh)
-    addTempLines(kbh)
-    addMeanDeviations(kbh)
+    var vis = new Visualization()
+    initVis(vis)
+    preprocessData(vis, data)
+    console.log("VIS", vis)
+    addTempLines(vis)
+    addMeanDeviations(vis)
   })
 }
 
-function preprocessData(data, dset)
+function preprocessData(vis, data)
 {
-  return data.map(function(d)
+  vis.data = data.map(function(d)
   {
     // d is a single year in the temperature dataset
     var y = d.YEAR
     var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
              d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC]
-    var s = mkSegments(dset, t)
+    var s = mkSegments(vis, t)
     return {"year": y, "temps": t, "segments": s};
   })
 }
@@ -67,10 +67,10 @@ function mkSegments(dset, tempArr)
   while (j <= tempArr.length - 1) {
     if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
     {
-       s = {"x1": dset.xScale(i),
-            "y1": dset.yScale(tempArr[i]),
-            "x2": dset.xScale(j),
-            "y2": dset.yScale(tempArr[j])
+       s = {"x1": dset.scale.x(i),
+            "y1": dset.scale.y(tempArr[i]),
+            "x2": dset.scale.x(j),
+            "y2": dset.scale.y(tempArr[j])
             }
       segments.push(s)
     }
@@ -84,27 +84,27 @@ function mkSegments(dset, tempArr)
 function initVis(dset)
 {
   // Insipration for using scales - https://bl.ocks.org/mbostock/3371592
-  dset.xScale = d3.scaleLinear()
+  dset.scale.x = d3.scaleLinear()
     .domain([0,11])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, dset.width - dset.margin.left - dset.margin.left])
     .nice()
 
-  dset.yScale = d3.scaleLinear()
+  dset.scale.y = d3.scaleLinear()
     .domain([-10, 26])   // this is the value on the axis
     // this is the space allocated the axis
     .range([400 - dset.margin.top - dset.margin.bottom, 0])
     .nice()
 
-  dset.colorScale = d3.scaleLinear()
+  dset.scale.heatmap = d3.scaleLinear()
     .domain([23, -7])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, 1])
 
-  var xAxis = d3.axisBottom(dset.xScale)
+  var xAxis = d3.axisBottom(dset.scale.x)
     .ticks(12)
 
-  var yAxis = d3.axisLeft(dset.yScale)
+  var yAxis = d3.axisLeft(dset.scale.y)
     .ticks(16)
 
   d3.select("body")
@@ -256,17 +256,16 @@ var addMeanDeviations = function(kbh)
       .attr("style", function(d)
       {
         if (d != 999.9) {
-          var c = d3.interpolateRdBu(kbh.colorScale(d))
+          var temp = kbh.scale.heatmap(d)
           // var c = d3.interpolateRdYlBu(kbh.colorScale(d))
-          return "fill:" + c + ";"
+          return "fill:" + d3.interpolateRdBu(temp) + ";"
         } else {
           return "fill:rgb(175,175,175);"
-          // return "fill:white;"
         }
       })
       .attr("transform", function(d,i)
       {
-        var x = kbh.xScale(i) + 30 - 32
+        var x = kbh.scale.x(i) + 30 - 32
         var y = 0
         return "translate(" + x + "," + y + ")"
       })
@@ -274,10 +273,10 @@ var addMeanDeviations = function(kbh)
     year.append("svg:text")
       .attr("id", data.year)
       .attr("class", "gridYear")
-      // .text(data.year)
+      .text(data.year)
       .attr("transform", function(d,i)
       {
-        var x = kbh.xScale(12) + 30 - 32 + 14
+        var x = kbh.scale.x(12) + 30 - 32 + 14
         var y = 10
         return "translate(" + x + "," + y + ")"
       })
