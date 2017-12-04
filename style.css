@@ -28,6 +28,10 @@ h1 {
   stroke-width: 1px;
 }
 
+.min-max-area {
+  fill: rgba(0, 0, 0, 0.1);
+}
+
 .xLines {
   stroke: rgba(0,0,0,0.1);
   stroke-dasharray: 2,2;

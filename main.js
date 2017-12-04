@@ -76,6 +76,7 @@ function main(filename)
     initVis(vis)
     preprocessData(vis, data)
     console.log("VIS", vis)
+	addMinMaxArea(vis)
     addTempLines(vis)
     addMeanDeviations(vis)
   })
@@ -123,10 +124,10 @@ function preprocessData(vis, data)
 
   /* make an svg polygon point list for later */
   var p = vis.gdata.max.map(function(y, x) {
-      return [x, y]
+      return [vis.scale.x(x) + vis.margin.left, vis.scale.y(y) + vis.margin.top]
     }).concat(
     vis.gdata.min.map(function(y, x){
-      return [x,y]
+      return [vis.scale.x(x) + vis.margin.left, vis.scale.y(y) + vis.margin.top]
     }).reverse()
     )
 
@@ -251,6 +252,10 @@ function initVis(vis)
 
   d3.select("#tempGraph")
     .append("svg:g")
+    .attr("id", "minMaxArea")
+
+  d3.select("#tempGraph")
+    .append("svg:g")
     .attr("id", "lines")
 
   d3.select("#heatmap")
@@ -295,6 +300,14 @@ var addTempLines = function(kbh)
     })
 }
 
+var addMinMaxArea = function(vis)
+{
+  var vis = d3.select("#tempGraph")
+    .select("#minMaxArea")
+    .append("svg:polygon")
+    .attr("points", vis.gdata.polygon)
+    .attr("class", "min-max-area")
+}
 
 var addMeanDeviations = function(kbh)
 {
