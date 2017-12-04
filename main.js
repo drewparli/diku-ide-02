@@ -9,7 +9,7 @@ function Visualization() {
   this.yScale;
   this.colorScale;
   this.data;
-  this.box = {"height": 10, "width": 64}
+  this.box = {"height": 4, "width": 64}
 }
 
 function Scale() {
@@ -97,7 +97,7 @@ function initVis(dset)
     .nice()
 
   dset.colorScale = d3.scaleLinear()
-    .domain([24, -8])   // this is the value on the axis
+    .domain([23, -7])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, 1])
 
@@ -121,7 +121,7 @@ function initVis(dset)
   d3.select("body")
     .append("svg")
     .attr("id", "meanDeviation")
-    .attr("transform", "translate(0,50)")
+    .attr("transform", "translate(0,10)")
     .attr("width", 900)
     .attr("height", 1800)
 
@@ -230,7 +230,7 @@ var addMeanDeviations = function(kbh)
     .attr("transform", function(d,i)
     {
       var x = 0
-      var y = (i * kbh.box.height) + (i * 3)
+      var y = (i * kbh.box.height) + (i * 1)
       return "translate(" + x + "," + y + ")"
     })
 
@@ -261,6 +261,7 @@ var addMeanDeviations = function(kbh)
           return "fill:" + c + ";"
         } else {
           return "fill:rgb(175,175,175);"
+          // return "fill:white;"
         }
       })
       .attr("transform", function(d,i)
@@ -273,7 +274,7 @@ var addMeanDeviations = function(kbh)
     year.append("svg:text")
       .attr("id", data.year)
       .attr("class", "gridYear")
-      .text(data.year)
+      // .text(data.year)
       .attr("transform", function(d,i)
       {
         var x = kbh.xScale(12) + 30 - 32 + 14
