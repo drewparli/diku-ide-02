@@ -1,16 +1,22 @@
-/*
-This is the main data structure for the whole visualization, where the
-con
-
-*/
+/* This is the main data structure for the whole visualization. */
 function Visualization() {
-  this.origin = {"x": 0, "y": 0}
   this.height = 1400
   this.width = 800
   this.margin = new Margin(30, 30, 30, 30)
   this.scale = new Scale()
   this.data
-  this.box = {"height": 4, "width": (this.width / 12) - 2  }
+  this.heatmap = new HeatMap()
+  this.box = {"height": 4, "width": (this.width / 12) - 2}
+}
+
+/* These are other data structures used to organize constants and magic numbers */
+function HeatMap() {
+  this.origin = new Origin(0, 10)
+}
+
+function Origin(x, y) {
+  this.x = x
+  this.y = y
 }
 
 function Scale() {
@@ -45,21 +51,34 @@ function main(filename)
   })
 }
 
+
 function preprocessData(vis, data)
 {
+  /* d is a single year in the temperature dataset */
   vis.data = data.map(function(d)
   {
-    // d is a single year in the temperature dataset
+
     var y = d.YEAR
     var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
-             d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC]
+             d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC].map(Number)
+
+    // TODO: add yearly mean temp
+    // TODO: add min/max temp for whole range of years by month
+    var sum;
+
+    var m = t.reduce((prev, cur) => cur += prev)
     var s = mkSegments(vis, t)
-    return {"year": y, "temps": t, "segments": s};
+    // TODO: add mean temp for whole range of years by month
+    // TODO: find standard deviation from this mean for each data point
+    return {"year": y,
+            "temps": t,
+            "segments": s,
+            "mean": m};
   })
 }
 
 
-function mkSegments(dset, tempArr)
+function mkSegments(vis, tempArr)
 {
   var i = 0
   var j = 1
@@ -67,10 +86,10 @@ function mkSegments(dset, tempArr)
   while (j <= tempArr.length - 1) {
     if (tempArr[i] != 999.9 && tempArr[j] != 999.9)
     {
-       s = {"x1": dset.scale.x(i),
-            "y1": dset.scale.y(tempArr[i]),
-            "x2": dset.scale.x(j),
-            "y2": dset.scale.y(tempArr[j])
+       s = {"x1": vis.scale.x(i),
+            "y1": vis.scale.y(tempArr[i]),
+            "x2": vis.scale.x(j),
+            "y2": vis.scale.y(tempArr[j])
             }
       segments.push(s)
     }
@@ -81,50 +100,55 @@ function mkSegments(dset, tempArr)
 }
 
 
-function initVis(dset)
+function initVis(vis)
 {
   // Insipration for using scales - https://bl.ocks.org/mbostock/3371592
-  dset.scale.x = d3.scaleLinear()
+  vis.scale.x = d3.scaleLinear()
     .domain([0,11])   // this is the value on the axis
     // this is the space allocated the axis
-    .range([0, dset.width - dset.margin.left - dset.margin.left])
+    .range([0, vis.width - vis.margin.left - vis.margin.left])
     .nice()
 
-  dset.scale.y = d3.scaleLinear()
+  vis.scale.y = d3.scaleLinear()
     .domain([-10, 26])   // this is the value on the axis
     // this is the space allocated the axis
-    .range([400 - dset.margin.top - dset.margin.bottom, 0])
+    .range([400 - vis.margin.top - vis.margin.bottom, 0])
     .nice()
 
-  dset.scale.heatmap = d3.scaleLinear()
+  vis.scale.heatmap = d3.scaleLinear()
     .domain([23, -7])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, 1])
 
-  var xAxis = d3.axisBottom(dset.scale.x)
+  var xAxis = d3.axisBottom(vis.scale.x)
     .ticks(12)
 
-  var yAxis = d3.axisLeft(dset.scale.y)
+  var yAxis = d3.axisLeft(vis.scale.y)
     .ticks(16)
 
+  /* Adding the title */
   d3.select("body")
     .append("div")
+    .append("h1")
     .attr("class", "title")
     .text("Monthly Temperature Data, Copenhagen Denmark (1880-now)")
 
+  /* Adding the main containter for the temperature graph */
   d3.select("body")
     .append("svg")
     .attr("id", "tempGraph")
     .attr("width", 800)
     .attr("height", 400)
 
+  /* Adding the main containter for the heat map */
   d3.select("body")
     .append("svg")
-    .attr("id", "meanDeviation")
-    .attr("transform", "translate(0,10)")
+    .attr("id", "heatmap")
+    .attr("transform", "translate(0," + vis.heatmap.origin.y + ")")
     .attr("width", 900)
     .attr("height", 1800)
 
+  /* Adding some spacing at the bottom of the visualization */
   d3.select("body")
     .append("svg")
     .attr("id", "footer")
@@ -168,7 +192,7 @@ function initVis(dset)
     .append("svg:g")
     .attr("id", "lines")
 
-  d3.select("#meanDeviation")
+  d3.select("#heatmap")
     .append("svg:g")
     .attr("id", "rows")
 }
@@ -213,7 +237,7 @@ var addTempLines = function(kbh)
 
 var addMeanDeviations = function(kbh)
 {
-  var vis = d3.select('#meanDeviation')
+  var vis = d3.select('#heatmap')
     .select("#rows")
 
   // add rows per year
@@ -237,7 +261,7 @@ var addMeanDeviations = function(kbh)
   // add cells per month
   kbh.data.forEach(function(data, i)
     {
-    var year = d3.select("#meanDeviation")
+    var year = d3.select("#heatmap")
       .select("#rows")
       .select("#_" + data.year)
 
