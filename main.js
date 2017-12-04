@@ -119,7 +119,7 @@ function preprocessData(vis, data)
 
   /* make an svg polygon point list for later */
   let p = vis.gdata.max.map(function(y, x) {
-      return [x, y]
+      return [vis.scale.x(x) + vis.margin.left, vis.scale.y(y) + vis.margin.top]
     }).concat(
     vis.gdata.min.map(function(y, x){
       return [vis.scale.x(x) + vis.margin.left, vis.scale.y(y) + vis.margin.top]
