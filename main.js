@@ -15,30 +15,9 @@ function Visualization() {
 var Current = "dummy"; /* id of the element holding the dot */
 
 function GData() {
-  this.max = [-100,
-              -101,
-              -102,
-              -103,
-              -104,
-              -105,
-              -106,
-              -107,
-              -108,
-              -109,
-              -110,
-              -111]
-  this.min = [100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100,
-              100]
+  this.max = [-100, -101, -102, -103, -104, -105, -106, -107, -108, -109, -110, -111]
+  this.min = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111]
+  this.mean = [[], [], [], [], [], [], [], [], [], [], [], []]
   this.polygon = null
 }
 
@@ -86,7 +65,11 @@ function main(filename)
 
 function preprocessData(vis, data)
 {
-  /* d is a single year in the temperature dataset */
+
+  /*
+  d is a single year in the temperature dataset
+  Loop through to find yearly stats and collect values for overall stats
+  */
   vis.data = data.map(function(d)
   {
     let y = d.YEAR
@@ -101,19 +84,30 @@ function preprocessData(vis, data)
     for (var i = 0; i <= t.length - 1; i++) {
       if (t[i] != 999.9)
         {
-          sum += t[i];
+          /* check overall and yearly min-max temperatures */
           if (t[i] > max) {max = t[i]}
           if (t[i] < min) {min = t[i]}
           if (t[i] > vis.gdata.max[i]) {vis.gdata.max[i] = t[i]}
           if (t[i] < vis.gdata.min[i]) {vis.gdata.min[i] = t[i]}
+
+          /* collect for yearly average */
+          sum += t[i];
+
+          /* collect value for calculating monthly average */
+          if (parseFloat(d.YEAR) < 1980) {vis.gdata.mean[i].push(t[i])}
+
         } else {continue;
           // TODO: use the average of the past few years here instead
         }
     }
+
+    /* Find the yearly mean */
     let m = sum / t.length
+
+    /* Create pairs of points for line segments */
     let s = mkSegments(vis, t)
-    return {
-            "mean": m,
+
+    return {"mean": m,
             "min": min,
             "max": max,
             "segments": s,
@@ -122,7 +116,23 @@ function preprocessData(vis, data)
             };
   })
 
-  /* make an svg polygon point list for later */
+  /* Calculate overall monthly mean */
+  vis.gdata.mean = vis.gdata.mean.map(function(monthArr, i)
+  {
+    return monthArr.reduce(sumArray) / monthArr.length
+  })
+
+  /* Calculate the standard deviation from the monthly mean for each month */
+  vis.data.map(function(yearData, i)
+  {
+    vis.data[i]["devs"] = yearData.temps.map(function(temp, i)
+    {
+      if (temp != 999.9) {return temp - vis.gdata.mean[i]} else {return temp}
+    })
+  })
+
+
+  /* Make an svg polygon point list for later */
   let p = vis.gdata.max.map(function(y, x) {
       return [x, y]
     }).concat(
@@ -177,8 +187,15 @@ function initVis(vis)
     .range([400 - vis.margin.top - vis.margin.bottom, 0])
     .nice()
 
+  /* For actual temperatures */
+  // vis.scale.heatmap = d3.scaleLinear()
+  //   .domain([23, -7])   // this is the value on the axis
+  //   // this is the space allocated the axis
+  //   .range([0, 1])
+
+  /* For temperature deviations */
   vis.scale.heatmap = d3.scaleLinear()
-    .domain([23, -7])   // this is the value on the axis
+    .domain([7, -7])   // this is the value on the axis
     // this is the space allocated the axis
     .range([0, 1])
 
@@ -269,7 +286,6 @@ function initVis(vis)
   d3.select("#heatmap")
     .append("svg:g")
     .attr("id", "rows")
-
 }
 
 
@@ -367,7 +383,7 @@ var addMeanDeviations = function(kbh)
       .select("#_" + data.year)
 
     var cells = year.selectAll("rect")
-      .data(data.temps)
+      .data(data.devs)
 
     cells.enter()
       .append("svg:rect")
@@ -418,8 +434,17 @@ var addMeanDeviations = function(kbh)
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 14
-        var y = 4
+        var y = 5.25
         return "translate(" + x + "," + y + ")"
       })
     })
+}
+
+
+
+
+
+/* Helper Functions */
+function sumArray(total, val) {
+  return total + val
 }
