@@ -8,6 +8,8 @@ function Visualization() {
   this.gdata = new GData()
   this.heatmap = new HeatMap()
   this.box = {"height": 4, "width": (this.width / 12) - 2}
+  this.months = {0:"JAN", 1:"FEB", 2:"MAR", 3:"APR", 4:"MAY", 5:"JUN",
+                 6:"JUL", 7:"AUG", 8:"SEP", 9:"OCT", 10:"NOV", 11:"DEC"}
 }
 
 var Current = "dummy"; /* id of the element holding the dot */
@@ -87,19 +89,18 @@ function preprocessData(vis, data)
   /* d is a single year in the temperature dataset */
   vis.data = data.map(function(d)
   {
-    var y = d.YEAR
-    var t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
+    let y = d.YEAR
+    let t = [d.JAN, d.FEB, d.MAR, d.APR, d.MAY, d.JUN,
              d.JUL, d.AUG, d.SEP, d.OCT, d.NOV, d.DEC].map(Number)
     // TODO: add mean temp for whole range of years by month
     // TODO: find standard deviation from this mean for each data point
 
-    var sum = 0
-    var min = 100
-    var max = -100
+    let sum = 0
+    let min = 100   // only for the current year
+    let max = -100
     for (var i = 0; i <= t.length - 1; i++) {
       if (t[i] != 999.9)
         {
-          // console.log(i, t[i], vis.gdata.max[i], vis.gdata.min[i])
           sum += t[i];
           if (t[i] > max) {max = t[i]}
           if (t[i] < min) {min = t[i]}
@@ -109,8 +110,8 @@ function preprocessData(vis, data)
           // TODO: use the average of the past few years here instead
         }
     }
-    var m = sum / t.length
-    var s = mkSegments(vis, t)
+    let m = sum / t.length
+    let s = mkSegments(vis, t)
     return {
             "mean": m,
             "min": min,
@@ -122,7 +123,7 @@ function preprocessData(vis, data)
   })
 
   /* make an svg polygon point list for later */
-  var p = vis.gdata.max.map(function(y, x) {
+  let p = vis.gdata.max.map(function(y, x) {
       return [x, y]
     }).concat(
     vis.gdata.min.map(function(y, x){
@@ -241,43 +242,56 @@ function initVis(vis)
     .attr("x2", 800 - 30 - 30)
     .attr("stroke", null)
 
+  /* remove the solid lines along the y-axis */
   d3.select("#tempGraph")
     .select("#yAxis")
     .select(".domain").remove()
 
+  /* remove the solid lines along the y-axis */
   d3.select("#tempGraph")
     .select("#xAxis")
     .select(".domain").remove()
 
+  /* create a group for the lines of the graph */
   d3.select("#tempGraph")
     .append("svg:g")
     .attr("id", "lines")
 
+  /* change the labels of the x-axis */
+  d3.select("#tempGraph")
+    .select("#xAxis")
+    .selectAll("text")
+    .text(function(d,i) {
+      return vis.months[i]
+    })
+
+  /* create a group for the cells of the heat map */
   d3.select("#heatmap")
     .append("svg:g")
     .attr("id", "rows")
+
 }
 
 
-var addTempLines = function(kbh)
+var addTempLines = function(vis)
 {
-  var vis = d3.select("#tempGraph")
+  var tempGraph = d3.select("#tempGraph")
     .select("#lines")
 
-  var groups = vis.selectAll("g")
-    .data(kbh.data)
+  var groups = tempGraph.selectAll("g")
+    .data(vis.data)
 
   groups.enter()
     .append("svg:g")
     .attr("class", "tempLine-off")
-    .attr("transform", "translate("+kbh.margin.left+","+kbh.margin.top+")")
+    .attr("transform", "translate("+vis.margin.left+","+vis.margin.top+")")
     .attr("id", function(d,i)
     {
         return "_" + d.year
     })
 
   // add line segments for each data point
-  kbh.data.forEach(function(data, i)
+  vis.data.forEach(function(data, i)
     {
     var year = d3.select("#tempGraph")
       .select("#_" + data.year)
@@ -305,6 +319,11 @@ var addMeanDeviations = function(kbh)
   var groups = vis.selectAll("g")
     .data(kbh.data.reverse())
 
+  /*
+  Each row is added as an svg hyperlink. This allows us to make the
+  temperature graph on top be interactive according to which row is
+  clicked
+  */
   groups.enter()
     .append("svg:a")
     .attr("class", "row")
@@ -335,8 +354,8 @@ var addMeanDeviations = function(kbh)
       })
     .attr("transform", function(d,i)
     {
-      var x = 0
-      var y = (i * kbh.box.height) + (i * 1)
+      let x = 0
+      let y = (i * kbh.box.height) + (i * 1)
       return "translate(" + x + "," + y + ")"
     })
 
@@ -376,20 +395,26 @@ var addMeanDeviations = function(kbh)
         return "translate(" + x + "," + y + ")"
       })
 
+    /*
+    This element is used to indicate which year (row) in the heat map has
+    been selected.
+    */
     year.append("svg:circle")
       .attr("id", function(d) { return "dot_" + d.year; })
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 6
-        var y = 10
+        var y = 2
         return "translate(" + x + "," + y + ")"
       })
       .attr("r", 2)
       .attr("fill", "white")
+
+    /* Labels every fifth year. */
     year.append("svg:text")
       .attr("id", data.year)
       .attr("class", "gridYear")
-      .text(function(d) { if (Number(d.year) % 10 == 0) return data.year; })
+      .text(function(d) { if (Number(d.year) % 5 == 0) return data.year; })
       .attr("transform", function(d,i)
       {
         var x = kbh.scale.x(12) + 30 - 32 + 14
