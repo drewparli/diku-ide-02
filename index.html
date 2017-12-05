@@ -53,9 +53,9 @@
 
     <p>For this project, we created the two visualizations show below.</p>
 
-    <p>The first visualization is a standard line graph, which shows the monthly average temperatures. The first element of the visualization is a highlighted polygonal area, representing the mininmum and maximum average temperatures for each month. The next element is the collection of light grey lines. Each line represents a single year of data. The final element is a highlighted line (dark red), which allows a viewer to differentiate a single year of data from the other years. This element is changed by clicking on a row of cells in the second visualization.</p>
+    <p>The first visualization is a standard line graph, which shows the monthly average temperatures. The first element of the visualization is a highlighted polygonal area, representing the mininmum and maximum average temperatures for each month. The next element is the collection of light grey lines. Each line represents a single year of data. The final element is a highlighted line (dark red), which allows a viewer to differentiate a single year of data from the other years. This element is changed by clicking on a row of cells in the second visualization. If data was missing, then that line segment is not drawn.</p>
 
-    <p>The second visualization is a heat map, which shows the deviation from each months mean temperature. Each column is a month, specifically the month labeled directly above it. The color scale is a deviation scale from blue for minus deviation to red for positive deviation. Each row is clickable, so that a viewer can see the corresponding temperature data in the first visualization.</p>
+    <p>The second visualization is a heat map, which shows the deviation from each months mean temperature. Each column is a month, specifically the month labeled directly above it. The color scale is a deviation scale from blue for minus deviation to red for positive deviation. Missing data is colored in grey. Each row is clickable, so that a viewer can see the corresponding temperature data in the first visualization.</p>
 
     <a href="vis.html" target="_blank"> <img src="vis.jpg"></a>
 
@@ -82,9 +82,9 @@
 
 
     <h2>Discussion</h2>
+    <p>In general, we are pleased with the result of our visualization. However, we do admit that the rows of the heat map are rather small in height and therefore more difficult to click on. We choose to maintain the small height in order to see the entire range at once on screen. This allows a viewer to see the trend in context, instead of a viewer having to scroll up and down through the heat map. One solution for the click interaction problem could be to change the implementation so that users could either enter a year in a form box or could scroll through the range of years.</p>
 
-
-    <h2>Conclusions</h2>
+    <p>Another element we thought of adding, but did not have time to do, was to add a new line graph to the left of the first visualization, which only shows the mean yearly temperature. Then under that line graph have an extra column in the heat map that is colored by the deviation from the yearly mean. We would expect this to help strengthen the arguement that the tendency is that the average temperature is rising.</p>
 
 
     <h2>Individual Responses</h2>
@@ -93,6 +93,9 @@
     <p>(???)</p>
 
     <p class="question">So far we've only taught static visualizations. Which dynamic elements or interactions could improve your article? A mockup is welcome.</p>
+
+    <p>As part of our visualization, we tried to provide a dynamic element by allowing the user to select a specific year of temperature data that is then highlighted in the line graph. Another element could be to update a box containing interesting data, such as the current year, its mean temperature, the minimum and maximum temperatures.</p>
+
     <p>(Andrew)</p>
 
     <p class="question">How big data sets are reasonable to load in d3
