@@ -90,7 +90,40 @@
     <h2>Individual Responses</h2>
 
     <p class="question">Which data set (that is realistically possible for you to obtain) and visualization would you include to give a more confident answer to the articles main question? A mockup is welcome.</p>
-    <p>(???)</p>
+    
+	<p>We would include data from European Climate Assessment & Dataset (see <a class="mono" href=" http://www.ecad.eu/dailydata/index.php" target="_blank"> http://www.ecad.eu/dailydata/index.php</a>). They provide series of daily observations at meteorological stations throughout Europe and the Mediterranean. In our case we were just interested in the data from Copenhagen weather station.</p>
+
+	<p>Two custom queries were created:</p>
+    <table border="1"  style="width:400px">
+      <tr>
+        <th>Type of series</th>
+        <th class="mono">non-blend </th>
+      </tr>
+      <tr>
+        <th> Country</th>
+        <th class="mono">DENMARK</th>
+      </tr>
+      <tr>
+        <th rowspan="2">Location</th>
+        <th class="mono"> KOEBENHAVN: LANDBOHOJSKOLEN-1</th>
+	  </tr>
+	  <tr>
+		<th class="mono"> KOEBENHAVN: LANDBOHOJSKOLEN</th>
+      </tr>
+      <tr>
+        <th>Element</th>
+        <th class="mono">Mean Temperature</th>
+      </tr>
+    </table>
+
+	<p></p>
+	<p>This data is missing observations from 31st of December, 1912 until 31st of December, 1970. The data is provided in the file <span class="mono">kbhEU.csv</span>. A <span class="mono">Python</span> program <span class="mono">calculate_means.py</span> was written to calculate average temperatures for each month (the raw file had information about the average temperature for each day). After preprocessing the new file <span class="mono">yearlyInfoEU.csv</span> was created.</p>
+
+	<p>The chosen visualization is rose plots for each month. The idea is to show the standard deviation for every year (negative values would be identified by different shades of blue color while for positive values red color would be chosen). In the middle there would be a circle identifying a mean. A mockup is shown below.</p>
+	
+	<img src="jan_std.PNG">
+	
+	<p>(Viktorija)</p>
 
     <p class="question">So far we've only taught static visualizations. Which dynamic elements or interactions could improve your article? A mockup is welcome.</p>
 
