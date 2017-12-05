@@ -63,14 +63,29 @@
     <h2>Motivation</h2>
     The motivation for this project was to show how the weather (in terms of temperature) has changed over the past 100 years. Current research indicates that global warming has impacted weather patterns across the Earth, therefore, we would expect the data to show a warming trend in our heat map visualization.
 
+
     <h2>Method</h2>
-    <p>For this assignment we used the historical temperature data for Copenhagen, Denmark available at <a class="mono" href="http://data.giss.nasa.gov/gistemp/station_data/" target="_blank">http://data.giss.nasa.gov/gistemp/station_data/</a>. </p>
-    <p>We started by using the Python script <span class="mono">mkCSV.py</span> to convert the data to a <span class="mono">.csv</span> file that is easier for <span class="mono">d3</span> to parse.
+    <p>For this assignment we used the historical temperature data for Copenhagen, Denmark available at <a class="mono" href="http://data.giss.nasa.gov/gistemp/station_data/" target="_blank">http://data.giss.nasa.gov/gistemp/station_data/</a>. From this dataset, we used the monthly average temperature data for each of the years provided, 1880 to 2017. There are a few missing data points, which are represented as <span class="mono">999.9</span>, therefore we have checked for these missing values in our implementation logic.</p>
+
+    <p>We started by using the Python script <span class="mono">mkCSV.py</span> to convert the data to a <span class="mono">.csv</span> file that is easier for <span class="mono">d3</span> to parse. After reading the data in our <span class="mono">d3</span> javascript, we do some preprocessing of the data:
+        <ol>
+            <li>the minimum and maximum temperature for each year</li>
+            <li>the minimum and maximum temperature for each month across all years</li>
+            <li>the mean temperature for each month for 1880 to 1979</li>
+            <li>the deviation of each month's average temperature from the mean.</li>
+        </ol>
     </p>
 
+
     <h2>Results</h2>
+    <p>After processing and visualizing the temperature data for Copenhagen, we can see that there is a general warming trend, especially if we look at the heat map visualization. Here we see that the deviation from the mean has become larger (i.e., warmer) when compared to the historical range (i.e., 1880 to 1979). This is especially true for the winter months (i.e., Dec-Mar).</p>
+
+
     <h2>Discussion</h2>
+
+
     <h2>Conclusions</h2>
+
 
     <h2>Individual Responses</h2>
 
