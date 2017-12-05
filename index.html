@@ -4,7 +4,7 @@
   <head>
     <link rel="stylesheet" href="style.css">
     <meta charset="utf-8">
-    <title>Temperature Data</title>
+    <title>IDE Assignment 2</title>
     <style type="text/css">
       table {
         width: 60%;
@@ -47,13 +47,26 @@
       </tr>
     </table>
 
-    <h2>Visualization Overview</h2>
-
     <!-- <p> Choose one or more stations near where you grew up (or any place you have a particular connection to) and submit a link to a homepage that answers the following main question: How has the weather changed over the past 100 years? If group members don't come from the same place, feel free to analyse only one location or all of them as you see fit. Start with only temperature data, but feel free to include other data sources (such as precipitation or wind) if time permits.</p> -->
 
+    <h2>Visualization Overview</h2>
+
+    <p>For this project, we created the two visualizations show below.</p>
+
+    <p>The first visualization is a standard line graph, which shows the monthly average temperatures. The first element of the visualization is a highlighted polygonal area, representing the mininmum and maximum average temperatures for each month. The next element is the collection of light grey lines. Each line represents a single year of data. The final element is a highlighted line (dark red), which allows a viewer to differentiate a single year of data from the other years. This element is changed by clicking on a row of cells in the second visualization.</p>
+
+    <p>The second visualization is a heat map, which shows the deviation from each months mean temperature. Each column is a month, specifically the month labeled directly above it. The color scale is a deviation scale from blue for minus deviation to red for positive deviation. Each row is clickable, so that a viewer can see the corresponding temperature data in the first visualization.</p>
+
+    <a href="vis.html" target="_blank"> <img src="vis.jpg"></a>
+
+
     <h2>Motivation</h2>
+    The motivation for this project was to show how the weather (in terms of temperature) has changed over the past 100 years. Current research indicates that global warming has impacted weather patterns across the Earth, therefore, we would expect the data to show a warming trend in our heat map visualization.
+
     <h2>Method</h2>
-    <p>For this assignment we used the historical temperature data for Copenhagen, Denmark available at <a href="http://data.giss.nasa.gov/gistemp/station_data/" target="_blank">http://data.giss.nasa.gov/gistemp/station_data/</a>. This page contains a report regarding the two visualizations our group created, as well as our individual responses to </p>
+    <p>For this assignment we used the historical temperature data for Copenhagen, Denmark available at <a class="mono" href="http://data.giss.nasa.gov/gistemp/station_data/" target="_blank">http://data.giss.nasa.gov/gistemp/station_data/</a>. </p>
+    <p>We started by using the Python script <span class="mono">mkCSV.py</span> to convert the data to a <span class="mono">.csv</span> file that is easier for <span class="mono">d3</span> to parse.
+    </p>
 
     <h2>Results</h2>
     <h2>Discussion</h2>
