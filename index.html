@@ -95,8 +95,38 @@
     <p class="question">So far we've only taught static visualizations. Which dynamic elements or interactions could improve your article? A mockup is welcome.</p>
     <p>(Andrew)</p>
 
-    <p class="question">How big data sets are reasonable to load in d3 visualizations? What types of visualizations does a limit like that exclude? Give examples of visualizations that must be based on large data sets and discuss how they deal with this. Could you have reduced the size of the data sets in this assignment?</p>
-    <p>(???)</p>
+    <p class="question">How big data sets are reasonable to load in d3
+    visualizations? What types of visualizations does a limit like that
+    exclude? Give examples of visualizations that must be based on large data
+    sets and discuss how they deal with this. Could you have reduced the size
+    of the data sets in this assignment?</p>
+
+    <p>Without having tested the limits of d3 as part of the question, there
+    are two types of limits: computation efficiency and information overload.
+    d3 is likely optimized to perform very well in the context it has to, but
+    too many SVG point renderings very likely deteriorate performance because
+    DOM handling is expensive and SVG rendering is not hardware accelerated.
+    Regarding information overload, one should be careful in rendering data in
+    too much detail. When data points become too granular or start overlapping
+    the information becomes meaningless as it makes it hard to make out
+    patterns.</p>
+
+    <p>Data sets which deal with large data sets might include population data,
+    image data, biological or astronomic data and aggregated information (like
+    books, corpora, and search query databases) amongst others. The main method
+    of visualizating these datasets is realizing the narrative one wants to
+    present: what about the data is interesting? Or said otherwise, what
+    abstraction should be employed to present the narrative in a clear way?
+    Doing this results in a decrease in the data dimensions and density, which
+    solves both problems.</p>
+
+    <p>This project did not have an excessive amount of data to start with, so
+    there is no reason to consider cutting the cruft away. The visualization
+    would still be reasonable if we did a stride in the list of years and it
+    would perhaps make the standard deviation comparison graph more succint,
+    but there does not feel an inherent need for it.</p>
+
+    <p>(Petur)</p>
 
     </div>
   </body>
